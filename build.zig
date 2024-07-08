@@ -89,4 +89,8 @@ pub fn build(b: *std.Build) !void {
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_lib_unit_tests.step);
     test_step.dependOn(&run_exe_unit_tests.step);
+
+    // Win32 dep
+    const zigwin32_dep = b.dependency("zigwin32", .{});
+    exe.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
 }
