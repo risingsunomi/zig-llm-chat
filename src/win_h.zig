@@ -42,31 +42,36 @@ pub fn winProc(hwnd: winh.HWND, uMsg: winh.UINT, wParam: winh.WPARAM, lParam: wi
 // --------------------------------------------------------------- //
 
 // -- Helpers -- //
-pub fn convertU8ToUShort(u8_input: *const []u8) anyerror![*c]const c_ushort {
-    // convert u8 string to ushort for windows
-    const short_out: [*c]const c_ushort = undefined;
 
-    for (u8_input, 0..) |val, idx| {
-        short_out[idx] = @as(c_ushort, val);
-    }
+// get the last error message from win API as a string
+// pub fn getErrorMessage(allocator: std.mem.Allocator, error_code: winh.DWORD) anyerror![]const u8 {
+//     const FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+//     const FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
+//     const FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
 
-    return short_out;
-}
+//     var buffer: [*]u8 = false;
 
-// -- Tests -- //
+//     const length = winh.FormatMessageA(
+//         FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
+//         null,
+//         error_code,
+//         0,
+//         buffer,
+//         0,
+//         null,
+//     );
 
-test "Display a Message Box" {
-    std.debug.print("Running winMsgBox\n", .{});
+//     if (length == 0 or buffer == undefined) {
+//         return error.ConversionFailed;
+//     }
 
-    const msg = "Test message";
-    const title = "Test title";
-    try winMsgBox(msg, title);
-}
+//     // Copy the buffer to allocator-allocated memory
+//     const result: []u8 = try allocator.dupe(u8, std.mem.sliceAsBytes(buffer[0..length]));
 
-test "Start Windows Process" {
-    std.debug.print("Running winProce\n", .{});
+//     // Free the buffer allocated by FormatMessage
+//     _ = winh.LocalFree(buffer);
 
-    const hInstance = winh.GetModuleHandleW(null);
-    const nCmdShow = winh.SW_SHOW;
-    try winProc(hInstance, nCmdShow);
-}
+//     return result;
+// }
+
+// --------------------------------------------------------------- //
