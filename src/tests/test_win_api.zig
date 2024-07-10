@@ -42,7 +42,5 @@ test "Register a window class" {
         rg_bool = true;
     }
 
-    //try testing.expectEqual(true, rg_bool);
-    //win32.graphics.
-
+    try testing.expectEqual(true, rg_bool);
 }
