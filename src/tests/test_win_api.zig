@@ -1,6 +1,6 @@
 // Test Windows API via zigwin32
 const testing = @import("std").testing;
-const win32 = @import("zigwin32");
+const win32_zig = @import("zigwin32").zig;
 const win32_UIWM = @import("zigwin32").ui.windows_and_messaging;
 const win32_FND = @import("zigwin32").foundation;
 
@@ -25,7 +25,7 @@ test "Register a window class" {
     const wc: win32_UIWM.WNDCLASSW = undefined;
     wc.lpfnWndProc = WinProc;
     wc.hInstance = win32_UIWM.GetModuleHandleW(null);
-    wc.lpszClassName = win32.zig.L("Test Register");
+    wc.lpszClassName = win32_zig.L("Test Register");
 
     try testing.expect(win32_UIWM.RegisterClass(&wc) != 0);
     //win32.graphics.
