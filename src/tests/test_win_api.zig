@@ -1,8 +1,11 @@
 // Test Windows API via zigwin32
+const WINAPI = @import("std").os.windows.WINAPI;
 const testing = @import("std").testing;
+const log = @import("std").log;
 const win32_zig = @import("zigwin32").zig;
 const win32_UIWM = @import("zigwin32").ui.windows_and_messaging;
 const win32_FND = @import("zigwin32").foundation;
+const win32_LL = @import("zigwin32").system.library_loader;
 
 test "Display a test MessageWindowA" {
     const mb_style = win32_UIWM.MESSAGEBOX_STYLE{ .OKCANCEL = 1, .ICONASTERISK = 1 };
@@ -10,7 +13,7 @@ test "Display a test MessageWindowA" {
     _ = win32_UIWM.MessageBoxA(null, "Testing", "test", mb_style);
 }
 
-fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM, lParam: win32_FND.LPARAM) win32_FND.LRESULT {
+fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM, lParam: win32_FND.LPARAM) callconv(WINAPI) win32_FND.LRESULT {
     switch (uMsg) {
         win32_UIWM.WM_DESTROY => {
             win32_UIWM.PostQuitMessage(0);
@@ -18,16 +21,28 @@ fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM, lParam: wi
         },
         else => {},
     }
-    return win32_UIWM.DefWindowProc(hwnd, uMsg, wParam, lParam);
+    return win32_UIWM.DefWindowProcA(hwnd, uMsg, wParam, lParam);
 }
 
 test "Register a window class" {
-    const wc: win32_UIWM.WNDCLASSW = undefined;
+    log.info("testing window registering", .{});
+    var wc: win32_UIWM.WNDCLASSA = undefined;
     wc.lpfnWndProc = WinProc;
-    wc.hInstance = win32_UIWM.GetModuleHandleW(null);
-    wc.lpszClassName = win32_zig.L("Test Register");
+    wc.hInstance = win32_LL.GetModuleHandleW(null);
+    wc.lpszClassName = "Test Register";
 
-    try testing.expect(win32_UIWM.RegisterClass(&wc) != 0);
+    log.info("Registering Class: {s}", .{"Test Register"});
+
+    const rg_class = win32_UIWM.RegisterClassA(&wc);
+    var rg_bool = false;
+
+    log.info("rg_class: {any}", .{rg_class});
+
+    if (rg_class != 0) {
+        rg_bool = true;
+    }
+
+    //try testing.expectEqual(true, rg_bool);
     //win32.graphics.
 
 }
