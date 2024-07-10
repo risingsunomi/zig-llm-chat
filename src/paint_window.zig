@@ -47,7 +47,7 @@ pub export fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM,
 
             const hdc: ?win32_GDI.HDC = win32_GDI.BeginPaint(hwnd, &ps);
 
-            const brush: ?win32_GDI.HBRUSH = win32_GDI.CreateSolidBrush(128);
+            const brush: ?win32_GDI.HBRUSH = win32_GDI.CreateSolidBrush(0x00FFFFFF);
             _ = win32_GDI.FillRect(hdc, &ps.rcPaint, brush);
 
             _ = win32_GDI.EndPaint(hwnd, &ps);
