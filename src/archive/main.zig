@@ -29,8 +29,6 @@ pub fn runApp(hInstance: winh.HINSTANCE, nCmdShow: winh.INT) anyerror!void {
         const error_code = winh.GetLastError();
         //const error_message = try winh_zig.getErrorMessage(allocator, error_code);
         std.debug.print("RegisterClassW error code: {any}\n", .{error_code});
-        allocator.free(error_message);
-
         return error.RegisterClassFailed;
     }
 
