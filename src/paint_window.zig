@@ -15,6 +15,8 @@ const win32_LL = @import("zigwin32").system.library_loader;
 const win32_SS = @import("zigwin32").system.system_services;
 const win32_GDI = @import("zigwin32").graphics.gdi;
 
+const win32_tools = @import("win_tools.zig");
+
 // WinProcess
 // Cant really make it a CALLBACK type so will try and see
 pub export fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM, lParam: win32_FND.LPARAM) callconv(WINAPI) win32_FND.LRESULT {
@@ -39,21 +41,25 @@ pub export fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM,
                 .rgbReserved = undefined,
             };
 
-            const hdc: win32_GDI.HDC = win32_GDI.BeginPaint(hwnd, &ps);
+            if (@TypeOf(hwnd) == ?*opaque {}) {
+                return 0;
+            }
 
-            const brush: win32_GDI.HBRUSH = @as(win32_GDI.HBRUSH, (win32_UIWM.COLOR_WINDOW + 1));
-            win32_GDI.FillRect(hdc, &ps.rcPaint, brush);
+            const hdc: ?win32_GDI.HDC = win32_GDI.BeginPaint(hwnd, &ps);
 
-            win32_GDI.EndPaint(hwnd, &ps);
+            const brush: ?win32_GDI.HBRUSH = win32_GDI.CreateSolidBrush(128);
+            _ = win32_GDI.FillRect(hdc, &ps.rcPaint, brush);
+
+            _ = win32_GDI.EndPaint(hwnd, &ps);
         },
         else => {},
     }
 
-    return win32_UIWM.DefWindowProc(hwnd, uMsg, wParam, lParam);
+    return win32_UIWM.DefWindowProcA(hwnd, uMsg, wParam, lParam);
 }
 
 // Main Window instance
-pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE, _: ?win32_FND.PWSTR, nCmdShow: u16) i32 {
+pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE, _: ?win32_FND.PWSTR, nCmdShow: u32) i32 {
     const class_name = "Sample Windows Class IN ZIG";
     var wc: win32_UIWM.WNDCLASSA = win32_UIWM.WNDCLASSA{
         .style = win32_UIWM.WNDCLASS_STYLES{},
@@ -76,11 +82,10 @@ pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE,
         return 0;
     }
 
-    const window_name = win32_zig.L("Win32API via ZIG");
-    const l_class_name = win32_zig.L(class_name);
-    const hwnd = win32_UIWM.CreateWindowExW(
+    const window_name = "Win32API via ZIG";
+    const hwnd: ?win32_FND.HWND = win32_UIWM.CreateWindowExA(
         win32_UIWM.WINDOW_EX_STYLE{},
-        l_class_name.ptr,
+        class_name.ptr,
         window_name,
         win32_UIWM.WS_OVERLAPPEDWINDOW,
         win32_UIWM.CW_USEDEFAULT,
@@ -93,12 +98,12 @@ pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE,
         null,
     );
 
-    if (hwnd == null) {
+    if (@TypeOf(hwnd) == ?*opaque {}) {
         logger.err("hwnd returned null", .{});
         return 0;
     }
 
-    const swc_ncmdshow: win32_UIWM.SHOW_WINDOW_CMD = nCmdShow;
+    const swc_ncmdshow = win32_tools.ncmdshow_vals[nCmdShow];
     _ = win32_UIWM.ShowWindow(hwnd, swc_ncmdshow);
 
     var msg = win32_UIWM.MSG{
@@ -110,9 +115,9 @@ pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE,
         .wParam = 0,
     };
 
-    while (win32_UIWM.GetMessageW(&msg, null, 0, 0) > 0) {
+    while (win32_UIWM.GetMessageA(&msg, null, 0, 0) > 0) {
         _ = win32_UIWM.TranslateMessage(&msg);
-        _ = win32_UIWM.DispatchMessageW(&msg);
+        _ = win32_UIWM.DispatchMessageA(&msg);
     }
 
     return 0;
