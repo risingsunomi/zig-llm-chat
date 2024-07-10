@@ -26,10 +26,18 @@ fn WinProc(hwnd: win32_FND.HWND, uMsg: u32, wParam: win32_FND.WPARAM, lParam: wi
 
 test "Register a window class" {
     log.info("testing window registering", .{});
-    var wc: win32_UIWM.WNDCLASSA = undefined;
-    wc.lpfnWndProc = WinProc;
-    wc.hInstance = win32_LL.GetModuleHandleW(null);
-    wc.lpszClassName = "Test Register";
+    var wc: win32_UIWM.WNDCLASSA = win32_UIWM.WNDCLASSA{
+        .style = win32_UIWM.WNDCLASS_STYLES{},
+        .lpfnWndProc = WinProc,
+        .cbClsExtra = 0,
+        .cbWndExtra = 0,
+        .hInstance = win32_LL.GetModuleHandleW(null),
+        .hIcon = null,
+        .hCursor = null,
+        .hbrBackground = null,
+        .lpszMenuName = "",
+        .lpszClassName = "Test Register",
+    };
 
     log.info("Registering Class: {s}", .{"Test Register"});
 
