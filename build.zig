@@ -92,4 +92,5 @@ pub fn build(b: *std.Build) !void {
     // Win32 dep
     const zigwin32_dep = b.dependency("zigwin32", .{});
     exe.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
+    exe_unit_tests.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
 }
