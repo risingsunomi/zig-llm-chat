@@ -44,6 +44,7 @@ pub fn OllamaGenerate(allocator: std.mem.Allocator, prompt: []const u8) anyerror
 
     std.debug.print("ollama_params:\n{s}\n", .{ollama_params});
 
+    // fetch to ollama generate api
     const resp: std.http.Client.FetchResult = try client.fetch(.{
         .payload = ollama_params,
         .method = .POST,

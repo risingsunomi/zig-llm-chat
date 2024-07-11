@@ -11,13 +11,18 @@ pub fn main() anyerror!void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    const oresp = try ogen.OllamaGenerate(allocator, "What is zig?");
+    const oresp = try ogen.OllamaGenerate(
+        allocator,
+        "What is zig?",
+    );
     defer allocator.free(oresp);
 
     std.debug.print("main oresp: {s}", .{oresp});
 
+    // convert from a const u8 to sentinel-terminated const u8
     const cll_oresp = try allocator.dupeZ(u8, oresp);
     defer allocator.free(cll_oresp);
 
+    // pass cll_oresp as pointer
     _ = winUI.MessageBoxA(null, cll_oresp.ptr, "LLM Response", mb_style);
 }
