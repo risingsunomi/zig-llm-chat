@@ -85,10 +85,6 @@ pub export fn wWinMain(hInstance: ?win32_FND.HINSTANCE, _: ?win32_FND.HINSTANCE,
         null,
     );
 
-    // if (txtbox_hwnd == null) {
-    //     logger.err("Failed to create text box\n");
-    // }
-
     const swc_ncmdshow = win32_tools.ncmdshow_vals[nCmdShow];
     _ = win32_UIWM.ShowWindow(hwnd, swc_ncmdshow);
 
