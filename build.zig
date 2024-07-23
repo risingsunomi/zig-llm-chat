@@ -31,7 +31,7 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "llm-chat",
-        .root_source_file = b.path("src/main.zig"),
+        .root_source_file = b.path("src/chat_window.zig"),
         .target = target,
         .optimize = optimize,
     });
